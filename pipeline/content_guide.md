@@ -15,6 +15,7 @@ returning the packet's body HTML. Start from `content_template.py`.
 | `balance_tables(subj)` | (element_table, modality_table) over the ten planets |
 | `aspects_table(aspects, dual=, names=)` | full aspect list table |
 | `overlay_table(owner, partner, owner_name, partner_name)` | synastry house overlays |
+| `score_table(data["synastry"]["score"])` | Discepolo scorecard table: one row per scored item plus the total |
 | `svg_inline(path)` | inline an SVG; wheels live at `workdir / "wheel-<slug>.svg"`, `synastry-wheel.svg`, `synastry-grid.svg` |
 | `fmt_deg(pos)` | 7.67 → `7°40′` |
 | `workdir` | Path to the work dir |
@@ -44,14 +45,20 @@ Only produce this when a pair is declared in `subjects.yaml` and the user asked 
 The natal packets are the primary deliverable; synastry is an add-on that builds on them.
 
 1. Cover (bi-wheel, both birth lines, three headline stats)
-2. How to read this chart + elemental comparison callout + score callout
-3. The headline aspects (Sun-Moon contacts first, always: they are what astrologers
+2. How to read this chart + elemental comparison callout
+3. The Discepolo scorecard: a dedicated section with `score_table(...)` showing each
+   scored item and its points, the band table (0-5 minimal / 5-10 medium / 10-15
+   important / 15-20 very important / 20-30 exceptional / 30+ rare exceptional), a note
+   on which chart owns which point in each row, and an honest reading (what scored,
+   what the method ignores). Explain the checklist: Sun-Sun, Sun-Moon, Sun/Moon to
+   Ascendant, Venus-Mars, destiny-sign bonus; 8 vs 11 points at ≤2° orb, 4 for the rest.
+4. The headline aspects (Sun-Moon contacts first, always: they are what astrologers
    check first)
-4. Channel by channel: minds, love, drive, growth, commitment, depth/healing, nodes
-5. House overlays: both tables + "what stands out" bullets
-6. The honest ledger: what flows / what takes work, side by side
-7. Synthesis + methods footer
-8. Appendix: aspect grid SVG + complete aspect table
+5. Channel by channel: minds, love, drive, growth, commitment, depth/healing, nodes
+6. House overlays: both tables + "what stands out" bullets
+7. The honest ledger: what flows / what takes work, side by side
+8. Synthesis + methods footer
+9. Appendix: aspect grid SVG + complete aspect table
 
 ## Writing rules (non-negotiable)
 
