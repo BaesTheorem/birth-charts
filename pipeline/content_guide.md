@@ -47,11 +47,10 @@ synastry packet.
 Only produce this when a pair is declared in `subjects.yaml` and the user asked for it.
 The natal packets are the primary deliverable; synastry is an add-on that builds on them.
 
-1. Cover (bi-wheel, both birth lines, three headline stats)
-2. How to read this chart, opening with the two people's compact Sun/Moon/Rising badge
-   strips in two named columns: `bigthree_strip(subj)` per person inside
-   `.cols2 > .b3col` with a `.who` name label. Then the lead + elemental comparison
-   callout.
+1. Cover: bi-wheel, both birth lines, each person's compact Sun/Moon/Rising badge
+   strip in two named columns (`bigthree_strip(subj)` inside `.cols2 > .b3col` with a
+   `.who` name label), and the three headline stats.
+2. How to read this chart: the lead + elemental comparison callout.
 3. The Discepolo scorecard: a dedicated section with `score_table(...)` showing each
    scored item and its points, the band table (0-5 minimal / 5-10 medium / 10-15
    important / 15-20 very important / 20-30 exceptional / 30+ rare exceptional), a note
