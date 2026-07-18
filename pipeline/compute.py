@@ -85,10 +85,26 @@ def dump_aspects(aspects_list):
 
 THEME_BLOCK = re.compile(r"(<style kr:node='Theme_Colors_Tag'>).*?(</style>)", re.S)
 
+# Kerykeion draws each zodiac glyph in a 32x32 symbol box slightly larger than the
+# zodiac band, so the glyphs collide with the ring lines. Shrink each one in place,
+# scaling around the glyph's own center (use x/y is the symbol's top-left corner).
+ZODIAC_SHRINK = 0.72
+ZODIAC_USE = re.compile(
+    r"<use x='([-\d.]+)' y='([-\d.]+)' xlink:href='#(Ari|Tau|Gem|Can|Leo|Vir|Lib|Sco|Sag|Cap|Aqu|Pis)' */>")
+
+
+def shrink_zodiac_use(m):
+    x, y, sign = float(m.group(1)), float(m.group(2)), m.group(3)
+    s = ZODIAC_SHRINK
+    tx, ty = (1 - s) * (x + 16), (1 - s) * (y + 16)
+    return (f"<g transform='translate({tx:.3f},{ty:.3f}) scale({s})'>"
+            f"<use x='{x}' y='{y}' xlink:href='#{sign}' /></g>")
+
 
 def retheme(svg_path):
     svg = svg_path.read_text()
     svg = THEME_BLOCK.sub(lambda m: m.group(1) + "\n" + THEME_CSS + "\n" + m.group(2), svg, count=1)
+    svg = ZODIAC_USE.sub(shrink_zodiac_use, svg)
     svg_path.write_text(svg)
 
 
