@@ -1,0 +1,6 @@
+# Real people's birth data, prose, and rendered packets stay local.
+work/
+# Environment
+.venv/
+__pycache__/
+*.pyc

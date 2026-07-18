@@ -1,0 +1,3 @@
+kerykeion>=5
+playwright>=1.40
+pyyaml>=6

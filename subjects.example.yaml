@@ -1,0 +1,31 @@
+# Copy into work/<dir>/subjects.yaml and fill in real data.
+# Times are local 24-hour clock; the tz string handles DST automatically.
+# lat/lng: decimal degrees, south and west negative.
+subjects:
+  - slug: person-a
+    name: Person A
+    year: 1990
+    month: 6
+    day: 15
+    hour: 14
+    minute: 30
+    city: Springfield
+    nation: US
+    lat: 39.8
+    lng: -89.65
+    tz: America/Chicago
+  - slug: person-b
+    name: Person B
+    year: 1992
+    month: 11
+    day: 2
+    hour: 8
+    minute: 5
+    city: Portland
+    nation: US
+    lat: 45.52
+    lng: -122.68
+    tz: America/Los_Angeles
+
+# Optional: compute a synastry packet for a pair of slugs.
+synastry: [person-a, person-b]
