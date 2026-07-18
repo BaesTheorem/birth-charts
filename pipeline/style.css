@@ -82,6 +82,13 @@ p { margin: 0 0 7pt 0; text-align: justify; }
   font-size: 8pt; letter-spacing: 0.25em; text-transform: uppercase;
   color: var(--gold); margin-bottom: 3pt;
 }
+/* compact two-column big-three strips (synastry opener) */
+.b3col { text-align: center; }
+.b3col .who { margin-bottom: 5pt; }
+.b3col .bigthree { max-width: 100%; margin: 0; }
+.b3col .bigthree div { padding: 5pt 4pt; }
+.b3col .bigthree .val { font-size: 10.5pt; }
+.b3col .bigthree .lbl { font-size: 7pt; letter-spacing: 0.18em; }
 
 /* ---------- tables ---------- */
 table.data {

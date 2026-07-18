@@ -6,8 +6,7 @@ See content_guide.md for the section contract and writing rules.
 
 
 def big_three(ctx):
-    """The Sun/Moon/Rising modules. Written once here; the synastry packet reuses them
-    for its side-by-side opening section, so keep each entry self-contained."""
+    """The three Sun/Moon/Rising prose modules for Part Three."""
     return {
         "sun": """<div class="entry"><h3>[TODO: Sun in Sign] <span class="tag">[house · degree]</span></h3>
 <div class="pos">Core identity · vitality · the life's purpose</div>
@@ -36,11 +35,7 @@ def build(ctx):
   <h1>NAME</h1>
   <div class="birthdata">[TODO: date · time zone · city · coordinates]</div>
   <hr class="rule">
-  <div class="bigthree">
-    <div><div class="lbl">Sun</div><div class="val">[TODO]</div></div>
-    <div><div class="lbl">Moon</div><div class="val">[TODO]</div></div>
-    <div><div class="lbl">Rising</div><div class="val">[TODO]</div></div>
-  </div>
+  {ctx["bigthree_strip"](d)}
   <div class="wheelwrap">{wheel}</div>
   <div class="foot">[TODO: lunar phase · day/night birth]</div>
 </div>
