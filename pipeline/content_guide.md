@@ -33,7 +33,15 @@ returning the packet's body HTML. Start from `content_template.py`.
 7. **Part Six: Synthesis** — one-sentence lead, then 3-4 paragraphs weaving the themes,
    plus the methods footer
 
-## Synastry packet structure
+**Natal packets stand alone.** Never reference the synastry packet, the other person, or
+the relationship from inside a natal packet: each one must read as a complete, private
+document its subject could receive by itself. Cross-chart observations belong only in the
+synastry packet.
+
+## Synastry packet structure (optional add-on)
+
+Only produce this when a pair is declared in `subjects.yaml` and the user asked for it.
+The natal packets are the primary deliverable; synastry is an add-on that builds on them.
 
 1. Cover (bi-wheel, both birth lines, three headline stats)
 2. How to read this chart + elemental comparison callout + score callout

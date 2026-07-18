@@ -1,10 +1,11 @@
 # birth-charts
 
-Printable natal-chart and synastry PDF packets, computed with the Swiss Ephemeris and
-typeset for paper. One YAML file of birth data in, three Letter-size PDF packets out:
-a natal packet per person and a synastry packet for the pair, each with chart wheels,
-full position/house/aspect tables, house overlays, and room for plain-language
-interpretation.
+Printable natal-chart PDF packets, computed with the Swiss Ephemeris and typeset for
+paper. One YAML file of birth data in, one Letter-size natal packet out per person, with
+chart wheels, full position/house/aspect tables, and room for plain-language
+interpretation. Declaring a pair adds an optional synastry packet (bi-wheel, interaspects,
+house overlays) on top. Natal packets are self-contained and never reference the synastry
+material.
 
 The mechanical layer is fully automated (ephemeris math, wheel SVGs, every table, PDF
 layout). The interpretive prose is deliberately not: each packet's readings are written
