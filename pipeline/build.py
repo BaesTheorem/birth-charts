@@ -156,6 +156,19 @@ def overlay_table(owner, partner, owner_name, partner_name):
             + "".join(rows) + "</tbody></table>")
 
 
+def score_table(score):
+    """Discepolo scorecard: one row per scored item, then the total."""
+    rows = []
+    for item in score.get("breakdown", []):
+        rows.append(f"<tr><td>{item['description']}</td>"
+                    f"<td class='muted'>{item['details']}</td>"
+                    f"<td class='num'>+{item['points']}</td></tr>")
+    rows.append(f"<tr><td><b>Total</b></td><td class='muted'>{score['description']}</td>"
+                f"<td class='num'><b>{score['value']}</b></td></tr>")
+    return ("<table class='data'><thead><tr><th>Scored contact</th><th>Detail</th>"
+            "<th>Points</th></tr></thead><tbody>" + "".join(rows) + "</tbody></table>")
+
+
 GLYPH_CHARS = "♈♉♊♋♌♍♎♏♐♑♒♓☉☽☿♀♂♃♄♅♆♇⚷⚸☊☋"
 
 
@@ -199,7 +212,7 @@ def main():
         "fmt_deg": fmt_deg, "SIGN_FULL": SIGN_FULL, "SIGN_GLYPH": SIGN_GLYPH,
         "positions_table": positions_table, "houses_table": houses_table,
         "balance_tables": balance_tables, "aspects_table": aspects_table,
-        "overlay_table": overlay_table,
+        "overlay_table": overlay_table, "score_table": score_table,
         "svg_inline": lambda p: (s := Path(p).read_text())[s.index("<svg"):],
     }
 

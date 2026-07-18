@@ -139,8 +139,11 @@ def main():
         }
         try:
             score = RelationshipScoreFactory(s1.model(), s2.model()).get_relationship_score()
-            data["synastry"]["score"] = {"value": score.score_value,
-                                         "description": score.score_description}
+            sd = score.model_dump()
+            data["synastry"]["score"] = {
+                "value": sd["score_value"], "description": sd["score_description"],
+                "is_destiny_sign": sd["is_destiny_sign"],
+                "breakdown": sd["score_breakdown"], "aspects": sd["aspects"]}
         except Exception as e:
             data["synastry"]["score"] = {"error": str(e)}
 
@@ -151,8 +154,9 @@ def main():
         print(f"{slug}: Sun {s.sun.sign} {s.sun.position:.2f} | Moon {s.moon.sign} "
               f"{s.moon.position:.2f} | ASC {s.first_house.sign} {s.first_house.position:.2f}")
     if pair:
+        sc = data["synastry"]["score"]
         print(f"synastry aspects: {len(data['synastry']['aspects'])}, "
-              f"score: {data['synastry']['score']}")
+              f"score: {sc.get('value')} ({sc.get('description', sc.get('error'))})")
 
 
 if __name__ == "__main__":
