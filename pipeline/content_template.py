@@ -5,6 +5,22 @@ See content_guide.md for the section contract and writing rules.
 """
 
 
+def big_three(ctx):
+    """The Sun/Moon/Rising modules. Written once here; the synastry packet reuses them
+    for its side-by-side opening section, so keep each entry self-contained."""
+    return {
+        "sun": """<div class="entry"><h3>[TODO: Sun in Sign] <span class="tag">[house · degree]</span></h3>
+<div class="pos">Core identity · vitality · the life's purpose</div>
+<p>[TODO: two paragraphs, sign then house]</p></div>""",
+        "moon": """<div class="entry"><h3>[TODO: Moon in Sign] <span class="tag">[house · degree]</span></h3>
+<div class="pos">Emotional nature · needs · instinct</div>
+<p>[TODO]</p></div>""",
+        "rising": """<div class="entry"><h3>[TODO: Rising sign] <span class="tag">Ascendant [degree]</span></h3>
+<div class="pos">The outward self · first impressions · the body's style</div>
+<p>[TODO]</p></div>""",
+    }
+
+
 def build(ctx):
     d = ctx["data"]["subjects"]["SLUG"]
     pos_tbl = ctx["positions_table"](d)
@@ -12,6 +28,7 @@ def build(ctx):
     elem_tbl, mode_tbl = ctx["balance_tables"](d)
     asp_tbl = ctx["aspects_table"](d["aspects"])
     wheel = ctx["svg_inline"](ctx["workdir"] / "wheel-SLUG.svg")
+    b3 = big_three(ctx)
 
     return f"""
 <div class="cover">
@@ -66,15 +83,12 @@ public direction, partnership, and roots.</p></div>
 
 <section class="pb">
 <h2><span class="no">Part Three</span>The Big Three</h2>
-<div class="entry"><h3>[TODO: Sun in Sign] <span class="tag">[house · degree]</span></h3>
-<div class="pos">Core identity · vitality · the life's purpose</div>
-<p>[TODO: two paragraphs, sign then house]</p></div>
-<div class="entry"><h3>[TODO: Moon in Sign] <span class="tag">[house · degree]</span></h3>
-<div class="pos">Emotional nature · needs · instinct</div>
-<p>[TODO]</p></div>
-<div class="entry"><h3>[TODO: Rising sign] <span class="tag">Ascendant [degree]</span></h3>
-<div class="pos">The outward self · first impressions · the body's style</div>
-<p>[TODO]</p></div>
+
+{b3["sun"]}
+
+{b3["moon"]}
+
+{b3["rising"]}
 </section>
 
 <section class="pb">

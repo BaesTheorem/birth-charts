@@ -214,6 +214,7 @@ def main():
         "balance_tables": balance_tables, "aspects_table": aspects_table,
         "overlay_table": overlay_table, "score_table": score_table,
         "svg_inline": lambda p: (s := Path(p).read_text())[s.index("<svg"):],
+        "load_content": lambda slug: load_module(workdir / f"content_{slug}.py"),
     }
 
     for slug, subj in data["subjects"].items():
