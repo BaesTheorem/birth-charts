@@ -48,7 +48,7 @@ html, body {
 .bigthree .val { font-size: 12.5pt; margin-top: 2pt; }
 .wheelwrap { margin: 8pt auto 0 auto; max-width: 5.3in; }
 .wheelwrap svg { width: 100%; height: auto; display: block; }
-.wheelwrap.synastry { max-width: 5.0in; }
+.wheelwrap.synastry { max-width: 4.6in; }
 .gridwrap { margin: 8pt auto; max-width: 4.6in; }
 .gridwrap svg { width: 100%; height: auto; display: block; }
 .cover .foot {
