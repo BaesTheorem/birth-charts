@@ -1,0 +1,124 @@
+/* Birth-chart packet print styles. Letter pages, flat + sharp, hairlines. */
+:root {
+  --ink: #1c2333;        /* deep navy ink */
+  --ink-soft: #3d4459;
+  --gold: #a8842c;
+  --gold-soft: #c9a961;
+  --hairline: #c9c4b8;
+  --paper-tint: #faf8f3;
+  --band: #1c2333;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  color: var(--ink);
+  font-family: "Palatino", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 10.5pt; line-height: 1.55;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+@page { size: letter; }
+
+/* ---------- cover ---------- */
+.cover { text-align: center; padding-top: 0; }
+.cover .kicker {
+  font-size: 8.5pt; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 8pt;
+}
+.cover h1 {
+  font-size: 28pt; font-weight: normal; letter-spacing: 0.04em;
+  margin: 0 0 3pt 0; color: var(--ink);
+}
+.cover .birthdata {
+  font-size: 9.5pt; color: var(--ink-soft); margin: 5pt 0 1pt 0; letter-spacing: 0.05em;
+}
+.cover .rule, .rule {
+  width: 1.6in; height: 1px; background: var(--gold); border: 0;
+  margin: 10pt auto;
+}
+.bigthree {
+  display: flex; justify-content: center; gap: 0; margin: 10pt auto 4pt auto;
+  border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline);
+  max-width: 5.6in;
+}
+.bigthree div { flex: 1; padding: 6pt 10pt; }
+.bigthree div + div { border-left: 1px solid var(--hairline); }
+.bigthree .lbl {
+  font-size: 7.5pt; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold);
+}
+.bigthree .val { font-size: 12.5pt; margin-top: 2pt; }
+.wheelwrap { margin: 8pt auto 0 auto; max-width: 5.3in; }
+.wheelwrap svg { width: 100%; height: auto; display: block; }
+.wheelwrap.synastry { max-width: 5.0in; }
+.gridwrap { margin: 8pt auto; max-width: 4.6in; }
+.gridwrap svg { width: 100%; height: auto; display: block; }
+.cover .foot {
+  font-size: 8pt; color: var(--ink-soft); letter-spacing: 0.12em; margin-top: 8pt;
+  text-transform: uppercase;
+}
+
+/* ---------- structure ---------- */
+.pb { page-break-before: always; }
+section { page-break-inside: auto; }
+h2 {
+  font-size: 15pt; font-weight: normal; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink); border-bottom: 1px solid var(--gold);
+  padding-bottom: 4pt; margin: 0 0 10pt 0;
+}
+h2 .no { color: var(--gold); font-size: 10pt; letter-spacing: 0.2em; display: block; margin-bottom: 2pt; }
+h3 {
+  font-size: 11.5pt; font-weight: bold; margin: 14pt 0 4pt 0; color: var(--ink);
+  break-after: avoid; page-break-after: avoid;
+}
+h3 .tag {
+  font-weight: normal; font-size: 8.5pt; color: var(--gold); letter-spacing: 0.15em;
+  text-transform: uppercase; margin-left: 6pt;
+}
+p { margin: 0 0 7pt 0; text-align: justify; }
+.lead { font-size: 11pt; color: var(--ink-soft); font-style: italic; text-align: left; }
+.cols2 { display: flex; gap: 0.3in; }
+.cols2 > div { flex: 1; }
+
+/* ---------- tables ---------- */
+table.data {
+  width: 100%; border-collapse: collapse; font-size: 9pt; margin: 4pt 0 12pt 0;
+}
+table.data th {
+  text-align: left; font-weight: normal; font-size: 7.5pt; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--gold);
+  border-bottom: 1px solid var(--ink); padding: 3pt 6pt;
+}
+table.data td { padding: 3.5pt 6pt; border-bottom: 1px solid var(--hairline); }
+table.data td.gl { font-size: 11pt; width: 18pt; padding-right: 0; }
+table.data td.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.data td.muted { color: var(--ink-soft); }
+table.balance { max-width: 100%; }
+
+/* ---------- interpretation blocks ---------- */
+.entry { border-left: 2px solid var(--gold-soft); padding: 2pt 0 2pt 12pt; margin: 0 0 12pt 0;
+         page-break-inside: avoid; }
+.entry h3 { margin-top: 0; }
+.entry .pos { font-size: 9pt; color: var(--ink-soft); letter-spacing: 0.05em; margin-bottom: 4pt; }
+.aspect-entry { page-break-inside: avoid; margin-bottom: 11pt; }
+.aspect-entry .asp-line {
+  font-size: 11pt; font-weight: bold; margin-bottom: 1pt;
+}
+.aspect-entry .asp-line .g { color: var(--gold); font-weight: normal; }
+.aspect-entry .orb { font-size: 8pt; color: var(--ink-soft); letter-spacing: 0.1em;
+  text-transform: uppercase; }
+.callout {
+  background: var(--paper-tint); border: 1px solid var(--hairline);
+  border-left: 2px solid var(--gold); padding: 10pt 12pt; margin: 10pt 0;
+  page-break-inside: avoid;
+}
+.callout .ttl { font-size: 8.5pt; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 4pt; }
+.callout p:last-child { margin-bottom: 0; }
+.band {
+  background: var(--band); color: #f4f1e8; padding: 14pt 16pt; margin: 0 0 14pt 0;
+}
+.band h2 { color: #f4f1e8; border-bottom-color: var(--gold-soft); margin-bottom: 4pt; }
+.band p { color: #d9d4c5; margin: 0; text-align: left; font-size: 9.5pt; }
+.footer-note { font-size: 8pt; color: var(--ink-soft); margin-top: 16pt;
+  border-top: 1px solid var(--hairline); padding-top: 6pt; }
+ul { margin: 0 0 8pt 0; padding-left: 16pt; }
+li { margin-bottom: 3pt; }
