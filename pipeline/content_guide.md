@@ -16,7 +16,7 @@ returning the packet's body HTML. Start from `content_template.py`.
 | `aspects_table(aspects, dual=, names=)` | full aspect list table |
 | `overlay_table(owner, partner, owner_name, partner_name)` | synastry house overlays |
 | `score_table(data["synastry"]["score"])` | Discepolo scorecard table: one row per scored item plus the total |
-| `load_content(slug)` | import a sibling content module; used by the synastry packet to reuse the natal `big_three` entries |
+| `bigthree_strip(subj)` | the compact Sun/Moon/Rising badge strip (covers, synastry opener columns) |
 | `svg_inline(path)` | inline an SVG; wheels live at `workdir / "wheel-<slug>.svg"`, `synastry-wheel.svg`, `synastry-grid.svg` |
 | `fmt_deg(pos)` | 7.67 → `7°40′` |
 | `workdir` | Path to the work dir |
@@ -29,10 +29,8 @@ returning the packet's body HTML. Start from `content_template.py`.
    paragraph, chart ruler paragraph
 3. **Part Two: Positions & houses** — tables plus a short "reading the table" explainer
 4. **Part Three: The big three** — Sun, Moon, Ascendant in depth (sign AND house).
-   Define these as a separate `big_three(ctx) -> {"sun":…, "moon":…, "rising":…}`
-   function that `build()` interpolates (see the template): the synastry packet imports
-   them for its side-by-side opening, so each entry must stand on its own and never
-   mention the partner.
+   The template organizes these as a `big_three(ctx)` function that `build()`
+   interpolates; keep that shape.
 5. **Part Four: Planets in sign & house** — Mercury through Pluto, Chiron, North Node,
    Lilith, Midheaven
 6. **Part Five: Major aspects** — the ~10-12 tightest/most personal, then the full table
@@ -50,29 +48,28 @@ Only produce this when a pair is declared in `subjects.yaml` and the user asked 
 The natal packets are the primary deliverable; synastry is an add-on that builds on them.
 
 1. Cover (bi-wheel, both birth lines, three headline stats)
-2. The two people, side by side: pair each person's `big_three` entries from the natal
-   modules (`load_content(slug).big_three(ctx)`) in `.cols2 .pair` rows with `.who`
-   name labels: his Sun next to her Sun, Moon next to Moon, Rising next to Rising.
-   Reuse the natal text verbatim; do not rewrite it.
-3. How to read this chart + elemental comparison callout
-4. The Discepolo scorecard: a dedicated section with `score_table(...)` showing each
+2. How to read this chart, opening with the two people's compact Sun/Moon/Rising badge
+   strips in two named columns: `bigthree_strip(subj)` per person inside
+   `.cols2 > .b3col` with a `.who` name label. Then the lead + elemental comparison
+   callout.
+3. The Discepolo scorecard: a dedicated section with `score_table(...)` showing each
    scored item and its points, the band table (0-5 minimal / 5-10 medium / 10-15
    important / 15-20 very important / 20-30 exceptional / 30+ rare exceptional), a note
    on which chart owns which point in each row, and an honest reading (what scored,
    what the method ignores). Explain the checklist: Sun-Sun, Sun-Moon, Sun/Moon to
    Ascendant, Venus-Mars, destiny-sign bonus; 8 vs 11 points at ≤2° orb, 4 for the rest.
-5. The headline aspects (Sun-Moon contacts first, always: they are what astrologers
+4. The headline aspects (Sun-Moon contacts first, always: they are what astrologers
    check first)
-6. Channel by channel: minds, love, drive, growth, commitment, depth/healing, nodes
-7. **Optional: Attraction & intimacy.** Include only when the user asks for it or says
+5. Channel by channel: minds, love, drive, growth, commitment, depth/healing, nodes
+6. **Optional: Attraction & intimacy.** Include only when the user asks for it or says
    yes when offered. Reads the sexual-chemistry layer: Venus-Mars interaspects (note
    their absence if absent), Mars on the angles, Pluto and Lilith contacts, 5th/8th
    house overlays, then a "two styles, side by side" paragraph from each person's natal
    Venus and Mars. Tasteful and direct; no explicitness, no coyness.
-8. House overlays: both tables + "what stands out" bullets
-9. The honest ledger: what flows / what takes work, side by side
-10. Synthesis + methods footer
-11. Appendix: aspect grid SVG + complete aspect table
+7. House overlays: both tables + "what stands out" bullets
+8. The honest ledger: what flows / what takes work, side by side
+9. Synthesis + methods footer
+10. Appendix: aspect grid SVG + complete aspect table
 
 ## Writing rules (non-negotiable)
 

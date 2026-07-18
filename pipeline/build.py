@@ -156,6 +156,16 @@ def overlay_table(owner, partner, owner_name, partner_name):
             + "".join(rows) + "</tbody></table>")
 
 
+def bigthree_strip(subj):
+    """The compact Sun/Moon/Rising badge strip used on covers and in synastry columns."""
+    cells = []
+    for lbl, key in (("Sun", "sun"), ("Moon", "moon"), ("Rising", "ascendant")):
+        sign = subj["points"][key]["sign"] if key in subj["points"] else subj["houses"]["first_house"]["sign"]
+        cells.append(f"<div><div class='lbl'>{lbl}</div>"
+                     f"<div class='val'>{SIGN_GLYPH[sign]} {SIGN_FULL[sign]}</div></div>")
+    return f"<div class='bigthree'>{''.join(cells)}</div>"
+
+
 def score_table(score):
     """Discepolo scorecard: one row per scored item, then the total."""
     rows = []
@@ -213,8 +223,8 @@ def main():
         "positions_table": positions_table, "houses_table": houses_table,
         "balance_tables": balance_tables, "aspects_table": aspects_table,
         "overlay_table": overlay_table, "score_table": score_table,
+        "bigthree_strip": bigthree_strip,
         "svg_inline": lambda p: (s := Path(p).read_text())[s.index("<svg"):],
-        "load_content": lambda slug: load_module(workdir / f"content_{slug}.py"),
     }
 
     for slug, subj in data["subjects"].items():
