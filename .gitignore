@@ -1,5 +1,7 @@
 # Real people's birth data, prose, and rendered packets stay local.
 work/
+# Swiss Ephemeris data files (~1.8 MB, fetched by pipeline/ephemeris.py --fetch)
+ephe/
 # Environment
 .venv/
 __pycache__/
