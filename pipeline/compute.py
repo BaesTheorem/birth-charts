@@ -30,10 +30,13 @@ import sys
 from pathlib import Path
 
 import yaml
+
+import ephemeris
 from kerykeion import AstrologicalSubject, KerykeionChartSVG, NatalAspects, SynastryAspects
 from kerykeion.relationship_score_factory import RelationshipScoreFactory
 
 REPO = Path(__file__).resolve().parent.parent
+ephemeris.init()      # real .se1 files or refuse to run; see ephemeris.py
 THEME_CSS = (REPO / "theme" / "elegant.css").read_text()
 
 POINTS = ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn",
