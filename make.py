@@ -1,6 +1,9 @@
 """One-command pipeline: compute ephemeris data + wheels, build HTML, render PDFs.
 
-    .venv/bin/python make.py work/<dir> [--dest <pdf output dir>]
+    .venv/bin/python make.py work/<dir> [--dest <pdf output dir>] [--auto]
+
+--auto writes any missing natal content module from rule tables
+(pipeline/delineate.py) instead of stopping. Synastry still needs a module.
 
 Stops after compute if the work dir has no content modules yet, and prints what
 still needs to be written (see pipeline/content_guide.md).
@@ -25,13 +28,15 @@ def main():
         i = args.index("--dest")
         dest = [args[i + 1]]
         args = args[:i] + args[i + 2:]
+    auto = "--auto" in args
+    args = [a for a in args if a != "--auto"]
     workdir = Path(args[0]).resolve()
 
     run("compute.py", str(workdir))
 
     data = json.loads((workdir / "chart-data.json").read_text())
-    missing = [f"content_{slug}.py" for slug in data["subjects"]
-               if not (workdir / f"content_{slug}.py").exists()]
+    missing = [] if auto else [f"content_{slug}.py" for slug in data["subjects"]
+                               if not (workdir / f"content_{slug}.py").exists()]
     if "synastry" in data and not (workdir / "content_synastry.py").exists():
         missing.append("content_synastry.py")
     if missing:
@@ -40,7 +45,7 @@ def main():
             print("  -", workdir / m)
         sys.exit(2)
 
-    run("build.py", str(workdir))
+    run("build.py", str(workdir), *(["--auto"] if auto else []))
     run("render.py", str(workdir), *dest)
 
 

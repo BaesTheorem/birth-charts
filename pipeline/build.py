@@ -212,7 +212,8 @@ def load_module(path):
 
 
 def main():
-    workdir = Path(sys.argv[1]).resolve()
+    auto = "--auto" in sys.argv
+    workdir = Path([a for a in sys.argv[1:] if a != "--auto"][0]).resolve()
     data = json.loads((workdir / "chart-data.json").read_text())
     outdir = workdir / "out"
     outdir.mkdir(exist_ok=True)
@@ -229,10 +230,14 @@ def main():
 
     for slug, subj in data["subjects"].items():
         mod_path = workdir / f"content_{slug}.py"
-        if not mod_path.exists():
+        if mod_path.exists():
+            body = load_module(mod_path).build(ctx)
+        elif auto:
+            import delineate
+            body = delineate.build(ctx, slug)
+        else:
             print(f"skip {slug}: no {mod_path.name}")
             continue
-        body = load_module(mod_path).build(ctx)
         (outdir / f"{slug}.html").write_text(page(f"Natal Chart — {subj['name']}", body))
         print(f"built {slug}.html")
 

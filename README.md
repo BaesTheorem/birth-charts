@@ -42,6 +42,15 @@ still needs. Write them (start from `pipeline/content_template.py`, follow
 `pipeline/content_guide.md`), then run `make.py` again. PDFs land in `work/my-charts/out/`,
 or pass `--dest ~/somewhere` to drop them elsewhere.
 
+To skip the writing step, pass `--auto`. Each natal packet without a content module is
+then written from rule tables (`pipeline/delineate.py`): keyword phrases for each planet,
+sign, house and aspect, plus the ranked signatures from `pipeline/facts.py`. No language
+model is involved, so every sentence traces back to a placement or an orb. The prose is
+plainer and more repetitive than a written module, and synastry still needs one.
+
+`.venv/bin/python pipeline/facts.py work/my-charts` prints the ranked signatures alone,
+which is a good starting outline for a written module.
+
 `work/` is gitignored on purpose: real people's birth data and readings stay local.
 
 ## Method

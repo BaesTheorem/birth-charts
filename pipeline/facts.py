@@ -50,9 +50,9 @@ def detect(subj):
     ruler = TRAD_RULER[asc_sign]
     facts = []
 
-    def add(score, kind, text, planets):
+    def add(score, kind, text, planets, **data):
         facts.append({"score": round(score, 1), "kind": kind, "text": text,
-                      "planets": set(planets)})
+                      "planets": set(planets), "data": data})
 
     # Element and modality concentrations and absences (ten planets).
     for table, names in ((ELEMENT, ["Fire", "Earth", "Air", "Water"]),
@@ -60,18 +60,19 @@ def detect(subj):
         for n in names:
             members = [k for k, p in pl.items() if table[p["sign"]] == n]
             if not members:
-                add(7, "missing", f"No planets in {n}", [])
+                add(7, "missing", f"No planets in {n}", [], name=n)
             elif len(members) >= 5 and table is ELEMENT:
                 bonus = 1 if ELEMENT[asc_sign] == n else 0
                 add(3 * (len(members) - 3) + bonus, "majority",
                     f"{len(members)}/10 planets in {n}"
-                    + (" (Ascendant too)" if bonus else ""), members)
+                    + (" (Ascendant too)" if bonus else ""), members,
+                    name=n, members=members, asc=bool(bonus))
 
     # Big three in one element.
     big3 = [pts["sun"]["sign"], pts["moon"]["sign"], asc_sign]
     if len({ELEMENT[s] for s in big3}) == 1:
         add(9, "big3", f"Sun, Moon and Ascendant all in {ELEMENT[big3[0]]}",
-            ["sun", "moon", "ascendant"])
+            ["sun", "moon", "ascendant"], name=ELEMENT[big3[0]])
 
     # Stelliums by sign and by house; merged when they share 3+ planets.
     groups = []
@@ -96,7 +97,8 @@ def detect(subj):
         score = 2 * len(allm) + (2 if len(desc) > 1 else 0)
         score += 2 if allm & {"sun", "moon", ruler} else 0
         add(score, "stellium", f"Stellium ({', '.join(desc)}): "
-            + ", ".join(label(m) for m in sorted(allm, key=PLANETS.index)), allm)
+            + ", ".join(label(m) for m in sorted(allm, key=PLANETS.index)), allm,
+            where=desc, members=sorted(allm, key=PLANETS.index))
 
     # Essential dignity, boosted on angular houses.
     for k, p in pl.items():
@@ -107,7 +109,8 @@ def detect(subj):
         else:
             continue
         score = 2 * WEIGHT[k] + (2 if house(p) in ANGULAR else 0)
-        add(score, "dignity", f"{label(k)} in {dig} ({p['sign']}), house {house(p)}", [k])
+        add(score, "dignity", f"{label(k)} in {dig} ({p['sign']}), house {house(p)}", [k],
+            planet=k, dignity=dig, sign=p["sign"], house=house(p))
 
     # Planets within 5 degrees of an angle, grouped per angle.
     for ak, aname in ANGLES.items():
@@ -120,19 +123,22 @@ def detect(subj):
             score = sum(2 * WEIGHT[k] + (5 - d) / 2 for k, d in hits)
             score += 2 if len(hits) > 1 else 0
             add(score, "angle", f"On the {aname}: " + ", ".join(
-                f"{label(k)} ({d:.1f}°)" for k, d in hits), [k for k, _ in hits])
+                f"{label(k)} ({d:.1f}°)" for k, d in hits), [k for k, _ in hits],
+                angle=aname, hits=hits)
 
     # Chart ruler placement.
     rp = pl[ruler]
     score = 4 + (2 if house(rp) in ANGULAR | {12} else 0)
     add(score, "ruler", f"Chart ruler {label(ruler)} ({asc_sign} rising) in "
-        f"{rp['sign']}, house {house(rp)}", [ruler])
+        f"{rp['sign']}, house {house(rp)}", [ruler],
+        planet=ruler, sign=rp["sign"], house=house(rp), asc_sign=asc_sign)
 
     # Luminary in the house that naturally matches its sign (Aries=1 ... Pisces=12).
     for k in ("sun", "moon"):
         p = pl[k]
         if SIGNS.index(p["sign"]) + 1 == house(p):
-            add(4, "resonance", f"{label(k)} in {p['sign']} in its natural house {house(p)}", [k])
+            add(4, "resonance", f"{label(k)} in {p['sign']} in its natural house {house(p)}", [k],
+                planet=k, sign=p["sign"], house=house(p))
 
     # Tight major aspects (orb under 2°) between luminaries, personal planets, angles.
     core = {"Sun", "Moon", "Mercury", "Venus", "Mars", "Ascendant", "Medium_Coeli"}
@@ -143,7 +149,8 @@ def detect(subj):
             names = [a["p1_name"].lower(), a["p2_name"].lower()]
             add(5 - 1.5 * a["orbit"], "aspect",
                 f"{a['p1_name']} {a['aspect']} {a['p2_name']} ({a['orbit']:.1f}°)",
-                [n for n in names if n in PLANETS])
+                [n for n in names if n in PLANETS],
+                p1=a["p1_name"], p2=a["p2_name"], aspect=a["aspect"], orb=a["orbit"])
 
     facts.sort(key=lambda f: -f["score"])
     kept, covered = [], set()
