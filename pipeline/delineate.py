@@ -7,6 +7,7 @@ The interpretive design (planet function + sign style + house arena) follows
 Astrolog's interpreter; the wording here is our own.
 """
 import facts
+import prose
 
 SIGN_STYLE = {
     "Ari": ("direct, fast and brave", "wants to start things and test itself"),
@@ -408,9 +409,21 @@ class Chart:
         elem_tbl, mode_tbl = c["balance_tables"](d)
         wheel = c["svg_inline"](c["workdir"] / f"wheel-{self.slug}.svg")
         local = d["local"]
-        sigs = "".join(f"<p><b>{i}. {h}</b> {t}</p>" for i, (h, t) in
-                       enumerate((self.fact_paragraph(f) for f in self.facts[:3]), 1))
-        lead, synth = self.synthesis()
+        written = prose.load(c["workdir"], self.slug)
+        if written:
+            bad = prose.check_text(d, prose.prose_text(written))
+            if bad:
+                raise SystemExit(f"prose_{self.slug}.json has ungrounded claims:\n" + "\n".join(
+                    f"  {why}: {s}" for s, why in bad))
+            pairs = [(x["title"], x["text"]) for x in written["signatures"]]
+            lead, synth = written["lead"].rstrip("."), written["synthesis"]
+        else:
+            pairs = [self.fact_paragraph(f) for f in self.facts[:3]]
+            lead, synth = self.synthesis()
+        sigs = "".join(f"<p><b>{i}. {h}</b> {t}</p>" for i, (h, t) in enumerate(pairs, 1))
+        method = ("Signatures and synthesis written from a brief and checked against the "
+                  "chart data; the rest assembled from rule tables." if written else
+                  "Text assembled from rule tables, without a language model.")
         four = "\n".join(self.entry(k) for k in
                          ["mercury", "venus", "mars", "jupiter", "saturn", "uranus",
                           "neptune", "pluto", "chiron", "true_node", "mean_lilith",
@@ -488,7 +501,7 @@ one. The orb is the distance from exact: the tighter, the louder.</p>
 <p class="lead">If the chart were a single line: {lead}.</p>
 {"".join(f"<p>{p}</p>" for p in synth)}
 <p class="footer-note">Calculated with Swiss Ephemeris · Tropical zodiac · Placidus houses ·
-Birth data as provided. Text assembled from rule tables, without a language model. Astrology
+Birth data as provided. {method} Astrology
 is offered here as a reflective language, not a deterministic science; take what is
 useful.</p>
 </section>
