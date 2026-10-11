@@ -1,3 +1,4 @@
-kerykeion>=5
+kerykeion>=5.12,<6
 playwright>=1.40
 pyyaml>=6
+geonamescache>=2.0

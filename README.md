@@ -7,10 +7,29 @@ interpretation. Declaring a pair adds an optional synastry packet (bi-wheel, int
 house overlays) on top. Natal packets are self-contained and never reference the synastry
 material.
 
-The mechanical layer is fully automated (ephemeris math, wheel SVGs, every table, PDF
-layout). The interpretive prose is deliberately not: each packet's readings are written
-per person into small Python content modules, following the contract in
-[`pipeline/content_guide.md`](pipeline/content_guide.md).
+## Quickest start: ask Claude
+
+Paste this into a Claude chat (with code execution on), with your own details:
+
+> Make me a natal chart packet with https://github.com/BaesTheorem/birth-charts.
+> Name: Ada. Born 1990-04-12 at 2:30 PM in Kansas City, MO.
+
+Claude clones the repo, follows [`AGENTS.md`](AGENTS.md), and gives back the packet. If
+you do not know the birth time, say so: you get a chart drawn for noon, with the
+time-sensitive parts marked.
+
+## How it works
+
+Three layers, each one optional on top of the last:
+
+1. **Computed:** ephemeris math, wheel SVGs, every table, PDF layout.
+2. **Rule tables (`--auto`):** a complete reading assembled from keyword tables for each
+   planet, sign, house and aspect, led by the chart's ranked signatures
+   (`pipeline/facts.py`, `pipeline/delineate.py`). No language model is involved.
+3. **Written:** the signatures and the synthesis rewritten from a brief
+   (`pipeline/prose.py brief`), then checked against the chart (`prose.py check`) so a
+   wrong placement cannot reach the page. Or write the whole packet by hand as a content
+   module, following [`pipeline/content_guide.md`](pipeline/content_guide.md).
 
 ## Stack
 
@@ -29,7 +48,22 @@ uv pip install --python .venv/bin/python -r requirements.txt
 .venv/bin/playwright install chromium   # if not already present
 ```
 
+Plain `pip install -r requirements.txt` works too. The Swiss Ephemeris data files
+(~1.8 MB) download on the first run. If Chromium is missing, the renderer tries to
+install it, and if it cannot, you get the HTML packet to print from a browser.
+
 ## Use
+
+One person, one command:
+
+```bash
+.venv/bin/python chart.py "Ada" 1990-04-12 14:30 "Kansas City, MO"
+```
+
+The place is found in an offline city list; pass `--lat --lng --tz` to skip that.
+Pass `unknown` as the time if it is not known.
+
+For pairs (synastry) or hand-written packets, use a YAML file:
 
 ```bash
 mkdir -p work/my-charts

@@ -439,6 +439,8 @@ class Chart:
   <hr class="rule">
   {c["bigthree_strip"](d)}
   <div class="wheelwrap">{wheel}</div>
+  {'<div class="foot">Birth time unknown: drawn for noon, so the Ascendant, '
+   'Midheaven and houses are placeholders</div>' if cfg.get("time_unknown") else ""}
   <div class="foot">{d["lunar_phase"]["moon_phase_name"]} Moon ·
   {"Night" if self.night() else "Day"} Birth</div>
 </div>
