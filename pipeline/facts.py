@@ -134,10 +134,12 @@ def detect(subj):
         if SIGNS.index(p["sign"]) + 1 == house(p):
             add(4, "resonance", f"{label(k)} in {p['sign']} in its natural house {house(p)}", [k])
 
-    # Tight aspects (orb under 2°) between luminaries, personal planets, angles.
+    # Tight major aspects (orb under 2°) between luminaries, personal planets, angles.
     core = {"Sun", "Moon", "Mercury", "Venus", "Mars", "Ascendant", "Medium_Coeli"}
+    major = {"conjunction", "opposition", "trine", "square", "sextile"}
     for a in subj["aspects"]:
-        if a["p1_name"] in core and a["p2_name"] in core and a["orbit"] < 2:
+        if (a["aspect"] in major and a["p1_name"] in core and a["p2_name"] in core
+                and a["orbit"] < 2):
             names = [a["p1_name"].lower(), a["p2_name"].lower()]
             add(5 - 1.5 * a["orbit"], "aspect",
                 f"{a['p1_name']} {a['aspect']} {a['p2_name']} ({a['orbit']:.1f}°)",
