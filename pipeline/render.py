@@ -8,19 +8,50 @@ in the Claude Chat sandbox), the self-contained HTML packets are copied to dest
 instead. They open in any browser and print to PDF from there (Letter size).
 """
 import json
+import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 
+def installed_chromiums():
+    """Chromium builds already on this machine, newest first. A sandbox often ships one
+    for an older Playwright than pip installs, and its download host is often blocked;
+    page.pdf works across nearby versions, so we drive whichever build is there."""
+    roots = [os.environ.get("PLAYWRIGHT_BROWSERS_PATH", ""), "~/.cache/ms-playwright",
+             "~/Library/Caches/ms-playwright", "/opt/pw-browsers", "/ms-playwright"]
+    pats = ["chromium_headless_shell-*/chrome-*/chrome-headless-shell",
+            "chromium_headless_shell-*/chrome-*/headless_shell",
+            "chromium-*/chrome-linux*/chrome",
+            "chromium-*/chrome-mac*/*.app/Contents/MacOS/*"]
+    found = []
+    for r in filter(None, roots):
+        root = Path(r).expanduser()
+        for pat in pats:
+            found += sorted(root.glob(pat), reverse=True)
+    for name in ("chromium", "chromium-browser", "google-chrome", "google-chrome-stable"):
+        if (w := shutil.which(name)):
+            found.append(Path(w))
+    return [f for f in dict.fromkeys(found) if os.access(f, os.X_OK)]
+
+
 def launch(p):
     try:
         return p.chromium.launch()
-    except Exception:  # noqa: BLE001 -- any launch failure means "no browser yet"
-        print("Chromium for Playwright is missing; installing it (one time) ...")
-        subprocess.run([sys.executable, "-m", "playwright", "install", "chromium"],
-                       check=False, timeout=600)
+    except Exception:  # any launch failure means "not this build"; re-raised below
+        for exe in installed_chromiums():
+            try:
+                b = p.chromium.launch(executable_path=str(exe))
+                print(f"Using the installed Chromium at {exe}")
+                return b
+            except Exception:  # noqa: BLE001, S112 -- try the next candidate
+                continue
+        print("No usable Chromium found; installing one for Playwright (one time) ...")
+        r = subprocess.run([sys.executable, "-m", "playwright", "install", "chromium"],
+                           check=False, timeout=600)
+        if r.returncode:
+            raise
         return p.chromium.launch()
 
 

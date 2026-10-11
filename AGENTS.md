@@ -13,15 +13,27 @@ placeholders. Do not ask for coordinates.
 
 ## 2. Install
 
+Always install into a virtual environment. A system Python (Debian's, for example) can
+refuse `pip install`, or build `pyswisseph` with a setuptools that is too old.
+
 ```bash
 git clone --depth 1 https://github.com/BaesTheorem/birth-charts
 cd birth-charts
-pip install -r requirements.txt
+uv venv .venv && uv pip install --python .venv/bin/python -r requirements.txt
+. .venv/bin/activate
+```
+
+Without `uv`:
+
+```bash
+python3 -m venv .venv && . .venv/bin/activate
+pip install -U pip setuptools wheel && pip install -r requirements.txt
 ```
 
 On Python 3.12 or later, `pyswisseph` builds from source, which needs a C compiler and
-takes a minute. Do not try to install a browser by hand: `render.py` does that, and falls
-back to HTML when it cannot.
+takes a minute. Do not install a browser by hand and do not pin Playwright: `render.py`
+uses any Chromium that is already installed (sandboxes often have one), tries a download
+only if there is none, and falls back to HTML if both fail.
 
 ## 3. Compute and build the rule-table packet
 

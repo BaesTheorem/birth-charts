@@ -48,9 +48,11 @@ uv pip install --python .venv/bin/python -r requirements.txt
 .venv/bin/playwright install chromium   # if not already present
 ```
 
-Plain `pip install -r requirements.txt` works too. The Swiss Ephemeris data files
-(~1.8 MB) download on the first run. If Chromium is missing, the renderer tries to
-install it, and if it cannot, you get the HTML packet to print from a browser.
+Plain `pip` works too, inside a venv (`python3 -m venv .venv`, then
+`pip install -U pip setuptools wheel` before the requirements). The Swiss Ephemeris data files
+(~1.8 MB) download on the first run. For PDFs the renderer uses Playwright's own
+Chromium, or any other Chromium already installed, or downloads one. If all of those fail,
+you get the HTML packet to print from a browser.
 
 ## Use
 
