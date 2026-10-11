@@ -2,8 +2,8 @@
 
     .venv/bin/python make.py work/<dir> [--dest <pdf output dir>] [--auto]
 
---auto writes any missing natal content module from rule tables
-(pipeline/delineate.py) instead of stopping. Synastry still needs a module.
+--auto writes any missing content module from rule tables (pipeline/delineate.py
+for natal packets, pipeline/synastry.py for the pair) instead of stopping.
 
 Stops after compute if the work dir has no content modules yet, and prints what
 still needs to be written (see pipeline/content_guide.md).
@@ -37,7 +37,7 @@ def main():
     data = json.loads((workdir / "chart-data.json").read_text())
     missing = [] if auto else [f"content_{slug}.py" for slug in data["subjects"]
                                if not (workdir / f"content_{slug}.py").exists()]
-    if "synastry" in data and not (workdir / "content_synastry.py").exists():
+    if not auto and "synastry" in data and not (workdir / "content_synastry.py").exists():
         missing.append("content_synastry.py")
     if missing:
         print("\nCompute done. Still needed before build (see pipeline/content_guide.md):")

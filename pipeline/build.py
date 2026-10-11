@@ -241,10 +241,17 @@ def main():
         (outdir / f"{slug}.html").write_text(page(f"Natal Chart — {subj['name']}", body))
         print(f"built {slug}.html")
 
-    if "synastry" in data and (workdir / "content_synastry.py").exists():
+    if "synastry" in data:
         pair = data["synastry"]["pair"]
         names = [data["subjects"][s]["name"] for s in pair]
-        body = load_module(workdir / "content_synastry.py").build(ctx)
+        if (workdir / "content_synastry.py").exists():
+            body = load_module(workdir / "content_synastry.py").build(ctx)
+        elif auto:
+            import synastry
+            body = synastry.build(ctx)
+        else:
+            print("skip synastry: no content_synastry.py (write one, or build with --auto)")
+            return
         (outdir / "synastry.html").write_text(
             page(f"Synastry — {names[0]} & {names[1]}", body))
         print("built synastry.html")

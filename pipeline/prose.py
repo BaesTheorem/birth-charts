@@ -2,6 +2,7 @@
 
     python pipeline/prose.py brief work/<dir> <slug>   # facts + rules + JSON shape
     python pipeline/prose.py check work/<dir> <slug>   # exit 1 on ungrounded claims
+    (use "synastry" as the slug for the pair packet)
 
 The writer (a person, or the assistant running this repo) saves
 work/<dir>/prose_<slug>.json. On the next --auto build, delineate.py uses its
@@ -184,10 +185,143 @@ DISPLAY = {DATA_NAME[k]: POINTS_INV[k] for k in DATA_NAME
            if k not in ("descendant", "imum_coeli")}
 
 
+# Synastry -----------------------------------------------------------------
+
+def load_synastry(workdir):
+    path = Path(workdir) / "prose_synastry.json"
+    if not path.exists():
+        return None
+    written = json.loads(path.read_text())
+    for k in ("lead", "synthesis"):
+        if k not in written:
+            raise ValueError(f"{path.name}: missing key {k!r}")
+    return written
+
+
+def synastry_text(written):
+    return " ".join([written.get("lead", "")] + written.get("synthesis", [])
+                    + written.get("attraction", []))
+
+
+def check_synastry(data, text):
+    """Check possessive claims: "Ada's Venus", "in Sam's 7th house", "Ada's Sun squares
+    Sam's Moon". A claim with the owners swapped fails, which is the point."""
+    from synastry import partner_house
+
+    pair = data["synastry"]["pair"]
+    by_name = {data["subjects"][s]["name"]: s for s in pair}
+    names = "|".join(map(re.escape, by_name))
+    poss = rf"\b({names})['’]s\s+({POINT_RE})\b"
+    asp_re = re.compile(rf"{poss}(?:\s+in\s+(?:{SIGN_RE}))?\s+(?:is\s+)?("
+                        + "|".join(ASPECT_WORDS) + rf")\s+(?:to\s+|with\s+)?{poss}")
+    sign_re = re.compile(rf"{poss}{VERB}\s+in\s+({SIGN_RE})\b")
+    house_re = re.compile(rf"{poss}(?:,\s+[\w, ]+?)?(?:\s+and\s+[\w ]+?)?\s+"
+                          rf"(?:falls?|sits?|lands?|is|are)?\s*in\s+({names})['’]s\s+"
+                          rf"(?:{HOUSE_RE})[\s-]house", re.I)
+    have = {}
+    for a in data["synastry"]["aspects"]:
+        k1, k2 = POINTS.get(DISPLAY.get(a["p1_name"], "")), POINTS.get(DISPLAY.get(a["p2_name"], ""))
+        have.setdefault((k1, k2), set()).add(a["aspect"])
+    problems = []
+    for s in sentences(text):
+        for o1, x, word, o2, y in asp_re.findall(s):
+            s1, s2 = by_name[o1], by_name[o2]
+            if s1 == s2:
+                continue
+            k1, k2 = POINTS[x], POINTS[y]
+            if s1 != pair[0]:
+                k1, k2 = k2, k1
+            if ASPECT_WORDS[word.lower()] not in have.get((k1, k2), set()):
+                problems.append((s, f"no {ASPECT_WORDS[word.lower()]} between {o1}'s {x} "
+                                    f"and {o2}'s {y}"))
+        for o, x, sign in sign_re.findall(s):
+            pts = data["subjects"][by_name[o]]["points"]
+            key = POINTS[x]
+            if key in pts and pts[key]["sign"] != FULL_SIGN[sign]:
+                problems.append((s, f"{o}'s {x} is in {SIGN_FULL[pts[key]['sign']]}, "
+                                    f"not {sign}"))
+        for m in house_re.finditer(s):
+            o, x, o2 = m.group(1), m.group(2), m.group(3)
+            if o == o2:
+                continue
+            n = int(m.group(4)) if m.group(4) else ORDINALS[m.group(5).lower()]
+            key = POINTS[next(k for k in POINTS if k.lower() == x.lower())]
+            p = data["subjects"][by_name[o]]["points"][key]
+            real = partner_house(p["abs_pos"], data["subjects"][by_name[o2]]["houses"])
+            if real != n:
+                problems.append((s, f"{o}'s {x} falls in {o2}'s house {real}, not {n}"))
+    return problems
+
+
+def brief_synastry(workdir):
+    from synastry import GROUPS, contacts, overlays
+
+    data = json.loads((Path(workdir) / "chart-data.json").read_text())
+    pair = data["synastry"]["pair"]
+    nm = {s: data["subjects"][s]["name"] for s in pair}
+    sc = data["synastry"]["score"]
+    lines = [f"# Writing brief: {nm[pair[0]]} & {nm[pair[1]]} (synastry)", "",
+             "Write the one-line lead and the synthesis for this synastry packet, and, "
+             "only if the user asked for it, an attraction and intimacy section. The rest "
+             "is generated from rule tables.", "",
+             f"Discepolo score: {sc['value']} ({sc['description']}).", "",
+             "## Contacts, ranked (luminaries, durability, growth, friction, angles)", ""]
+    for c in contacts(data)[:20]:
+        g = GROUPS[c["group"]][0] if c["group"] < len(GROUPS) else "other"
+        lines.append(f"- [{g}] {nm[c['a']]}'s {POINTS_INV[c['ka']]} {c['aspect']} "
+                     f"{nm[c['b']]}'s {POINTS_INV[c['kb']]} ({c['orb']:.1f}°)")
+    lines += ["", "## Strongest house overlays", ""]
+    for g in overlays(data)[:8]:
+        lines.append(f"- {nm[g['owner']]}'s " + ", ".join(POINTS_INV[k] for k in g["planets"])
+                     + f" in {nm[g['partner']]}'s {g['house']}th house".replace(
+                         "1th", "1st").replace("2th", "2nd").replace("3th", "3rd")
+                     .replace("11st", "11th").replace("12nd", "12th"))
+    lines += ["", "## Each person's placements", ""]
+    for s in pair:
+        pts = data["subjects"][s]["points"]
+        lines.append(f"{nm[s]}: " + "; ".join(
+            f"{POINTS_INV[k]} {SIGN_FULL[pts[k]['sign']]} (house {house_of(pts[k])})"
+            for k in facts.PLANETS) + f"; Ascendant {SIGN_FULL[pts['ascendant']['sign']]}")
+    lines += ["", "## Rules", "",
+              "- Name both owners in every contact: \"Ada's Venus trines Sam's Mars\". "
+              "The checker reads that form and rejects a contact with the owners swapped.",
+              "- Lead with the luminary contacts, then durability, growth, friction.",
+              "- Synthesis connects contacts and overlays; it does not list them again.",
+              "- Honest about what takes work. No flattery, no doom, no verdict on whether "
+              "the relationship will last.",
+              "- No em dashes, no hype adverbs, no pronouns you were not given.",
+              "- Attraction section: tasteful and direct, read from Venus-Mars contacts, "
+              "Mars on the angles, Pluto and Lilith contacts, 5th and 8th house overlays.", "",
+              "## Output", "",
+              f"Save as {Path(workdir) / 'prose_synastry.json'}:", "", "```json",
+              json.dumps({"lead": "One sentence, no final period.",
+                          "synthesis": ["Paragraph.", "Paragraph.", "Paragraph."],
+                          "attraction": ["Optional. Leave this key out unless asked."]},
+                         indent=2), "```", "",
+              f"Then run: python pipeline/prose.py check {workdir} synastry",
+              f"and rebuild: python make.py {workdir} --auto"]
+    return "\n".join(lines)
+
+
 def main(argv):
     if len(argv) != 3 or argv[0] not in ("brief", "check"):
         sys.exit(__doc__)
     mode, workdir, slug = argv
+    if slug == "synastry":
+        if mode == "brief":
+            print(brief_synastry(workdir))
+            return
+        written = load_synastry(workdir)
+        if written is None:
+            sys.exit(f"no prose_synastry.json in {workdir}")
+        data = json.loads((Path(workdir) / "chart-data.json").read_text())
+        problems = check_synastry(data, synastry_text(written))
+        for s, why in problems:
+            print(f"UNGROUNDED: {why}\n    in: {s}")
+        if problems:
+            sys.exit(1)
+        print("OK: prose_synastry.json matches the charts")
+        return
     if mode == "brief":
         print(brief(workdir, slug))
         return

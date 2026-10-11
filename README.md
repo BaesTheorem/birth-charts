@@ -63,7 +63,10 @@ One person, one command:
 The place is found in an offline city list; pass `--lat --lng --tz` to skip that.
 Pass `unknown` as the time if it is not known.
 
-For pairs (synastry) or hand-written packets, use a YAML file:
+Add `--with NAME DATE TIME PLACE` for a second person: you get both natal packets and a
+synastry packet, all from rule tables.
+
+For hand-written packets, use a YAML file:
 
 ```bash
 mkdir -p work/my-charts
@@ -78,9 +81,10 @@ or pass `--dest ~/somewhere` to drop them elsewhere.
 
 To skip the writing step, pass `--auto`. Each natal packet without a content module is
 then written from rule tables (`pipeline/delineate.py`): keyword phrases for each planet,
-sign, house and aspect, plus the ranked signatures from `pipeline/facts.py`. No language
-model is involved, so every sentence traces back to a placement or an orb. The prose is
-plainer and more repetitive than a written module, and synastry still needs one.
+sign, house and aspect, plus the ranked signatures from `pipeline/facts.py` (natal) or the
+ranked contacts from `pipeline/synastry.py` (pairs). No language model is involved, so
+every sentence traces back to a placement or an orb. The prose is plainer and more
+repetitive than a written module.
 
 `.venv/bin/python pipeline/facts.py work/my-charts` prints the ranked signatures alone,
 which is a good starting outline for a written module.

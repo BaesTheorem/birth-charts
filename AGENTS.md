@@ -66,9 +66,18 @@ background graphics on.
 
 ## Two people (synastry)
 
-`chart.py` makes one natal packet per run. A synastry packet needs a YAML work dir and a
-hand-written `content_synastry.py`; see the README "Use" section and the synastry part of
-`pipeline/content_guide.md`. Only do this when the user asks for it.
+Only when the user asks for a relationship or compatibility reading:
+
+```bash
+python chart.py "Ada" 1990-04-12 14:30 "Kansas City, MO" --with "Sam" 1988-11-02 07:15 "Omaha, NE"
+```
+
+You get both natal packets and `Ada & Sam - Synastry` in `work/ada-sam/out/`. For the
+written layer, do step 4 for each person, then `brief`/`check` with `synastry` as the
+slug and save `work/ada-sam/prose_synastry.json`. In the synastry prose, name both owners
+in every contact ("Ada's Venus trines Sam's Mars"): the checker reads that form, and it
+rejects a contact with the owners swapped. Add the optional `attraction` key only if the
+user asked for that section.
 
 ## Privacy
 
