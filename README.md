@@ -98,3 +98,12 @@ which is a good starting outline for a written module.
 Tropical zodiac, Placidus houses, true node, mean Lilith. Natal aspect orbs follow
 Kerykeion's defaults. Synastry packets include the Discepolo relationship score for
 color; the guide treats it as one yardstick, not a verdict.
+
+## License
+
+Copyright (C) 2026 Alex Hedtke. Released under the GNU Affero General Public License
+v3.0; see [`LICENSE`](LICENSE). The AGPL matches the license of
+[Kerykeion](https://github.com/g-battaglia/kerykeion), which this project builds on.
+The Swiss Ephemeris data files are not part of this repo: `pipeline/ephemeris.py`
+downloads them from [Astrodienst's repository](https://github.com/aloistr/swisseph),
+under Astrodienst's own terms (AGPL or their professional license).
